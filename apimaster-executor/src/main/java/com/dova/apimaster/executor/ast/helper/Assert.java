@@ -1,16 +1,16 @@
 package com.dova.apimaster.executor.ast.helper;
 
 
-import com.dova.apimaster.executor.ast.domain.AstParseError;
-import com.dova.apimaster.executor.ast.domain.AstParseException;
+import com.dova.apimaster.executor.ast.domain.AstError;
+import com.dova.apimaster.executor.ast.domain.AstException;
 
 /**
  * Created by liuzhendong on 16/5/27.
  */
 public class Assert {
-    public static void assertion(boolean expression, AstParseError error, String format, Object... args){
+    public static void assertion(boolean expression, AstError error, String format, Object... args){
         if(!expression){
-            throw  new AstParseException(error,String.format(format,args));
+            throw  new AstException(error,String.format(format,args));
         }
     }
 

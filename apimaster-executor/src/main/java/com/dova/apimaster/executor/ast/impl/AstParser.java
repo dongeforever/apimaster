@@ -1,7 +1,7 @@
 package com.dova.apimaster.executor.ast.impl;
 
 import com.dova.apimaster.executor.ast.domain.AstNode;
-import com.dova.apimaster.executor.ast.domain.AstParseError;
+import com.dova.apimaster.executor.ast.domain.AstError;
 import com.dova.apimaster.executor.ast.domain.Operator;
 import com.dova.apimaster.executor.ast.helper.Assert;
 import com.dova.apimaster.executor.ast.helper.CharHelper;
@@ -35,7 +35,6 @@ public class AstParser {
             }
             //可能是操作符
             if(CharHelper.isOpStart(c)){
-                AstNode node = new AstNode();
                 ParseResult opRes = parseOperator(expression,i);
                 print("parse Op succ start:%d offset:%d", i, opRes.offset);
                 if(opRes.offset > 0){
@@ -56,32 +55,32 @@ public class AstParser {
             }
         }
         finishConcat(opStack, valueStack);
-        Assert.assertion(opStack.size() == 0 && valueStack.size() == 1, AstParseError.UnExpected, "unexpected result opStack:%d valueStack:%d", opStack.size(), valueStack.size());
+        Assert.assertion(opStack.size() == 0 && valueStack.size() == 1, AstError.UnExpected, "unexpected result opStack:%d valueStack:%d", opStack.size(), valueStack.size());
         return valueStack.pop();
     }
 
     private int checkParseResult(ParseResult res,ArrayDeque<AstNode> opStack, ArrayDeque<AstNode> valueStack, int lastStatus, String expression,int start){
         //检测操作符与值直接的关系是否符合规范
         if(lastStatus == -1){
-            Assert.assertion(res.opNode == null && res.valueNode != null, AstParseError.ValueNoValue,"expression must start with Value index:%d char:%c", start, expression.charAt(start));
+            Assert.assertion(res.opNode == null && res.valueNode != null, AstError.ValueNoValue,"expression must start with Value index:%d char:%c", start, expression.charAt(start));
             valueStack.push(res.valueNode);
             return 0;
         }
-        PrintUtil.print("check result lastStatus:%d op:%b value:%b", lastStatus, res.opNode != null, res.valueNode != null);
+        PrintUtil.print("check result lastStatus:%d op:%b originValue:%b", lastStatus, res.opNode != null, res.valueNode != null);
         if(lastStatus == 0){
             //上一个是值
-            Assert.assertion(res.opNode != null && res.valueNode == null, AstParseError.ValueNoValue,"Value-No-Value index:%d char:%c", start, expression.charAt(start));
+            Assert.assertion(res.opNode != null && res.valueNode == null, AstError.ValueNoValue,"Value-No-Value index:%d char:%c", start, expression.charAt(start));
 
             if(opStack.size() == 0){
                 opStack.push(res.opNode);
                 return 1;
             }
-            Operator currOp = (Operator)res.opNode.value;
+            Operator currOp = (Operator)res.opNode.originValue;
             //TODO 单目运算符应该直接取值
             //非单目
             while (true){
                 print("opStack:%d valueStack:%d", opStack.size(), valueStack.size());
-                Operator lastOp = (Operator)opStack.peek().value;
+                Operator lastOp = (Operator)opStack.peek().originValue;
                 //如果当前运算符优先级 > 操作符栈顶的操作符.priority越小,优先级越大
                 if(currOp.priority < lastOp.priority){
                     opStack.push(res.opNode);
@@ -96,7 +95,7 @@ public class AstParser {
             }
         }else {
             //上一个是操作符
-            Assert.assertion(res.opNode == null && res.valueNode != null,AstParseError.OpNoOP, "Op-No-Op index:%d char:%c", start, expression.charAt(start));
+            Assert.assertion(res.opNode == null && res.valueNode != null, AstError.OpNoOP, "Op-No-Op index:%d char:%c", start, expression.charAt(start));
             valueStack.push(res.valueNode);
             return 0;
         }
@@ -110,12 +109,13 @@ public class AstParser {
     }
     private void concatOperatorAndValue(ArrayDeque<AstNode> opStack, ArrayDeque<AstNode> valueStack){
         AstNode lastOpNode = opStack.pop();
-        Operator lastOp = (Operator) lastOpNode.value;
-        Assert.assertion(valueStack.size() >= lastOp.argNum, AstParseError.ValueNumError,"Value num is error op:%s required:%d actual:%d",
+        Operator lastOp = (Operator) lastOpNode.originValue;
+        Assert.assertion(valueStack.size() >= lastOp.argNum, AstError.ValueNumError,"Value num is error op:%s required:%d actual:%d",
                 lastOp.desc, lastOp.argNum,valueStack.size());
-        if(lastOp.argNum >= 1) lastOpNode.first = valueStack.pop();
-        if(lastOp.argNum >= 2) lastOpNode.second = valueStack.pop();
-        if(lastOp.argNum >= 3) lastOpNode.third = valueStack.pop();
+        //注意出栈的顺序
+        for(int i = lastOp.argNum-1; i>=0;i--){
+            lastOpNode.setChild(i, valueStack.pop());
+        }
         valueStack.push(lastOpNode);
     }
 
@@ -142,16 +142,16 @@ public class AstParser {
                 op = tmp;
             }
         }
-        Assert.assertion(op != null, AstParseError.UnExpected,"parse op failed index:%d char:%c",start, expression.charAt(start));
+        Assert.assertion(op != null, AstError.UnExpected,"parse op failed index:%d char:%c",start, expression.charAt(start));
         res.offset = op.desc.length();
-        AstNode astNode = new AstNode(AstNode.Type.OPERATE);
-        astNode.value = op;
+        AstNode astNode = new AstNode(AstNode.NodeType.OPERATE);
+        astNode.originValue = op;
         res.opNode = astNode;
         return res;
     }
 
     private ParseResult parseValue(String expression, int start){
-        print("parse value index:%d char:%c",start, expression.charAt(start));
+        print("parse originValue index:%d char:%c",start, expression.charAt(start));
         ParseResult res = new ParseResult();
         int p = start;
         StringBuilder sb = new StringBuilder();
@@ -159,7 +159,13 @@ public class AstParser {
         for(;p < expression.length();p++){
             char c = expression.charAt(p);
             print("p:%d char:%c",p,c);
-            if(CharHelper.isOpStart(c)){
+            //消除歧义
+            if(c == '.' && digitNum == sb.length()){
+                digitNum++;
+                sb.append(c);
+                continue;
+            }
+            if(CharHelper.isOpStart(c) || CharHelper.isBlank(c)){
                 break;
             }
             if(CharHelper.isDigit(c)){
@@ -169,13 +175,17 @@ public class AstParser {
         }
         Object value = null;
         if(sb.length() == digitNum){
-            value = Integer.valueOf(sb.toString());
+            if(sb.toString().contains(".")){
+                value = Double.valueOf(sb.toString());
+            }else {
+                value = Integer.valueOf(sb.toString());
+            }
         }else {
             value = sb.toString();
         }
         res.offset = sb.length();
-        AstNode astNode = new AstNode(AstNode.Type.DATA);
-        astNode.value = value;
+        AstNode astNode = new AstNode(AstNode.NodeType.DATA);
+        astNode.originValue = value;
         res.valueNode = astNode;
         return res;
     }
