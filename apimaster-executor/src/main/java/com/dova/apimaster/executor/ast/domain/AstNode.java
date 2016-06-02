@@ -9,18 +9,9 @@ public class AstNode {
     public enum NodeType {
         DATA,OPERATE,CONTROL,FUNC;
     }
-    //基础值,内置对象,绑定的对象
+    //
     public enum DataType{
-        NODATA,PRIMITIVE,BUILTIN,BINDING
-    }
-    public AstNode(NodeType nodeType){
-        this.nodeType = nodeType;
-        if(nodeType == NodeType.DATA){
-            this.dataType = DataType.PRIMITIVE;
-        }else{
-            this.dataType = DataType.NODATA;
-        }
-        init();
+        NODATA,NUMRIC,QUOTEDSTRING,UNQUOTEDSTRING,BINDING
     }
     public AstNode(NodeType nodeType,DataType dataType){
         this.nodeType = nodeType;

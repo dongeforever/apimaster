@@ -6,18 +6,26 @@ import java.util.*;
  * Created by liuzhendong on 16/5/23.
  */
 public enum Operator {
+    BRACKET1(0,0,"(",0),
+    BRACKET2(0,0,")",0),
     AT(0,2,".",1),
     INDEX(1,2,"[]",1),
-    ASSIGN(2,2,"=",4),
-    EQ(3,2,"==",5),
-    LT(4,2,"<",5),
-    GT(5,2,">",5),
-    LTEQ(6,2,"<=",5),
-    GTEQ(7,2,">=",5),
-    ADD(8,2,"+",3),
-    MINUS(9,2,"-",3),
-    MUTLI(10,2,"*",2),
-    DIV(11,2,"/",2);
+    MUTLI(2,2,"*",2),
+    DIV(3,2,"/",2),
+    MOD(4,2,"%",2),
+    ADD(5,2,"+",3),
+    MINUS(6,2,"-",3),
+    ASSIGN(7,2,"=",4),
+    EQ(8,2,"==",5),
+    LT(9,2,"<",5),
+    GT(10,2,">",5),
+    LTEQ(11,2,"<=",5),
+    GTEQ(12,2,">=",5),
+    OR(13,2,"||",6),
+    AND(14,2,"&&",6);
+
+
+
 
     public final  int value;
     public final int argNum;

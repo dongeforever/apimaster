@@ -18,4 +18,68 @@ public class UnitCase {
     private List<Header> headers;
     private String requestBody;
     private String responseBody;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getRestApiId() {
+        return restApiId;
+    }
+
+    public void setRestApiId(int restApiId) {
+        this.restApiId = restApiId;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public List<Expression> getAssertions() {
+        return assertions;
+    }
+
+    public void setAssertions(List<Expression> assertions) {
+        this.assertions = assertions;
+    }
+
+    public List<Field> getPathVariables() {
+        return pathVariables;
+    }
+
+    public void setPathVariables(List<Field> pathVariables) {
+        this.pathVariables = pathVariables;
+    }
+
+    public List<Header> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<Header> headers) {
+        this.headers = headers;
+    }
+
+    public String getRequestBody() {
+        return requestBody;
+    }
+
+    public void setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
+    }
+
+    public String getResponseBody() {
+        return responseBody;
+    }
+
+    public void setResponseBody(String responseBody) {
+        this.responseBody = responseBody;
+    }
 }

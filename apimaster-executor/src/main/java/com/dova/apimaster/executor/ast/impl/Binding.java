@@ -1,13 +1,11 @@
 package com.dova.apimaster.executor.ast.impl;
 
 import com.dova.apimaster.executor.ast.Function;
-import com.dova.apimaster.executor.ast.domain.BindingObject;
+import com.dova.apimaster.executor.ast.BindingObject;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by liuzhendong on 16/5/31.

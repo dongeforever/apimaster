@@ -41,4 +41,25 @@ public class JsonSetTest {
         System.out.println(a.toString());
         System.out.println(b.toString());
     }
+
+    @Test
+    public void testThree(){
+        StringBuilder sb = new StringBuilder("200");
+        Object value = null;
+        value = false ? (Double.valueOf("200")) : Integer.valueOf("100");
+        System.out.println(String.format("%s %s",value.getClass(), value.toString()));
+
+        if(false){
+            value = Double.valueOf(sb.toString());
+        }else {
+            value = Integer.valueOf(sb.toString());
+        }
+        System.out.println(String.format("%s",value.getClass()));
+
+        int a = false ? 2:3;
+        System.out.println(a);
+
+        Integer b = null;
+        Integer c = 1 > 2 ? 0 : b;
+    }
 }

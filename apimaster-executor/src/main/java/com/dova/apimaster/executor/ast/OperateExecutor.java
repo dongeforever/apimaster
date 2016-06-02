@@ -5,14 +5,15 @@ import com.dova.apimaster.executor.ast.domain.AstException;
 import com.dova.apimaster.executor.ast.domain.Operator;
 import com.dova.apimaster.executor.ast.helper.Assert;
 import com.dova.apimaster.executor.ast.helper.PrintUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Created by liuzhendong on 16/5/23.
  */
 public abstract class OperateExecutor {
 
-    private boolean debug = false;
     //执行操作
     public  final Object exeOperate(Operator operator, Object[] args){
         Assert.assertion(operator.argNum == args.length, AstError.ValueNumError,"参数个数与操作符不符 op:%s argsNum:%d", operator.desc, args.length);
@@ -21,6 +22,8 @@ public abstract class OperateExecutor {
                 return operateAdd(args[0],args[1]);
             case MUTLI:
                 return operateMulti(args[0],args[1]);
+            case DIV:
+                return operateDiv(args[0],args[1]);
             case AT:
                 return operateAt(args[0],args[1]);
             case EQ:
@@ -33,6 +36,12 @@ public abstract class OperateExecutor {
                 return operateLtEq(args[0], args[1]);
             case GTEQ:
                 return operateGtEq(args[0], args[1]);
+            case OR:
+                return operateOr(args[0], args[1]);
+            case AND:
+                return operateAnd(args[0], args[1]);
+            case MOD:
+                return operateMod(args[0], args[1]);
             default:
                 throw new AstException(AstError.UnsupportedOperation, "暂时不支持的操作:" + operator.desc);
         }
@@ -53,16 +62,16 @@ public abstract class OperateExecutor {
     protected abstract Boolean operateLtEq(Object first, Object second);
     protected abstract Boolean operateGtEq(Object first, Object second);
 
-    public void print(String format,Object... args) {
-        if(debug) {
-            PrintUtil.print(format, args);
-        }
-    }
+    protected abstract Boolean operateOr(Object first, Object second);
 
-    public void enableDebug(){
-        this.debug = true;
-    }
-    public void disableDebug(){
-        this.debug =false;
+    protected abstract Boolean operateAnd(Object first, Object second);
+
+    protected abstract Integer operateMod(Object first, Object second);
+
+    protected abstract Object operateDiv(Object first,Object second);
+
+
+    public void print(String format,Object... args) {
+        PrintUtil.print(format, args);
     }
 }

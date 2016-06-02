@@ -36,6 +36,12 @@
             <artifactId>json-lib</artifactId>
             <classifier>jdk15</classifier>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

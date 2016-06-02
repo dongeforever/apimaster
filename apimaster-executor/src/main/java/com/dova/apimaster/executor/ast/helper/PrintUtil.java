@@ -5,8 +5,10 @@ package com.dova.apimaster.executor.ast.helper;
  */
 public class PrintUtil {
 
+    public static Boolean debug  = true;
     public static void print(String format, Object... args){
-        System.out.println(String.format(format, args));
+        if(debug){
+            System.out.println(String.format(format, args));
+        }
     }
-
 }
