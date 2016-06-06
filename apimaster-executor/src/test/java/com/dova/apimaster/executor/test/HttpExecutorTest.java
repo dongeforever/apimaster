@@ -6,7 +6,7 @@ import com.dova.apimaster.common.domain.UnitCase;
 import com.dova.apimaster.common.util.JSON;
 import com.dova.apimaster.executor.ast.domain.ApiRes;
 import com.dova.apimaster.executor.ast.helper.PrintUtil;
-import com.dova.apimaster.executor.http.HttpAssertExecutor;
+import com.dova.apimaster.executor.http.HttpAssertInjectExecutor;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class HttpExecutorTest {
 
-    HttpAssertExecutor assertExecutor = new HttpAssertExecutor();
+    HttpAssertInjectExecutor assertExecutor = new HttpAssertInjectExecutor();
     {
         PrintUtil.debug = false;
     }
@@ -30,7 +30,7 @@ public class HttpExecutorTest {
         restApi.setResponseBodyType(RestApi.BodyType.JSON);
         UnitCase unitCase = new UnitCase();
         List<Expression>  asserts = new ArrayList<>();
-        asserts.add(new Expression().value("response.status / 100 == 2"));
+        asserts.add(new Expression().value("response.status / 100 == 2 || response.status == 400"));
         asserts.add(new Expression().value("response.text.id == 4835"));
         asserts.add(new Expression().value("response.text.name == chaojidan"));
         asserts.add(new Expression().value("response.text.price == 100 || response.text.price == 20"));

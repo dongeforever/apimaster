@@ -59,4 +59,11 @@ public class JSON {
         return (ObjectNode)objectMapper.readTree(text);
     }
 
+    public static ObjectNode unCheckedOf(String text){
+        try{
+            return (ObjectNode)objectMapper.readTree(text);
+        }catch (Exception e){
+            throw Throwables.propagate(e);
+        }
+    }
 }
