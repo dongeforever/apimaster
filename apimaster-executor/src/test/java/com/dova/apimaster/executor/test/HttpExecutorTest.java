@@ -3,10 +3,12 @@ package com.dova.apimaster.executor.test;
 import com.dova.apimaster.common.domain.Expression;
 import com.dova.apimaster.common.domain.RestApi;
 import com.dova.apimaster.common.domain.UnitCase;
+import com.dova.apimaster.common.domain.UnitInject;
 import com.dova.apimaster.common.util.JSON;
 import com.dova.apimaster.executor.ast.domain.ApiRes;
 import com.dova.apimaster.executor.ast.helper.PrintUtil;
 import com.dova.apimaster.executor.http.HttpAssertInjectExecutor;
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -25,24 +27,31 @@ public class HttpExecutorTest {
     @Test
     public void testGet()throws Exception{
         RestApi restApi = new RestApi();
-        restApi.setUrl("http://localhost:8081/sellers/dishes/4835");
+        restApi.setUrl("http://localhost:8081/sellers/dishes/{dishId}");
         restApi.setMethod(RestApi.RequestMethod.GET);
         restApi.setResponseBodyType(RestApi.BodyType.JSON);
-        UnitCase unitCase = new UnitCase();
-        List<Expression>  asserts = new ArrayList<>();
-        asserts.add(new Expression().value("response.status / 100 == 2 || response.status == 400"));
-        asserts.add(new Expression().value("response.text.id == 4835"));
-        asserts.add(new Expression().value("response.text.name == chaojidan"));
-        asserts.add(new Expression().value("response.text.price == 100 || response.text.price == 20"));
+        UnitCase unitCase1 = new UnitCase();
+        unitCase1.setId(1);
+        unitCase1.setPathVariables(JSON.newObjectNode().put("dishId",4835));
+        unitCase1.setAssertions(Lists.newArrayList(new Expression().value("response.status / 100 == 2")));
 
-        unitCase.setAssertions(asserts);
-        long start = System.currentTimeMillis();
-        for(int i = 0; i< 1;i++){
-            ApiRes apiRes = assertExecutor.execute(restApi, unitCase);
-            System.out.println(JSON.toJson(apiRes.response));
-            System.out.println(JSON.toJson(apiRes.assertRes));
-        }
-        long end = System.currentTimeMillis();
-        System.out.println(end - start);
+        UnitCase unitCase2 = new UnitCase();
+        unitCase2.setId(2);
+        unitCase2.setPathVariables(JSON.newObjectNode().put("dishId",4832));
+        unitCase2.setAssertions(Lists.newArrayList(new Expression().value("response.status / 100 == 2")));
+        unitCase2.setInjects(Lists.newArrayList(new UnitInject().fromUnitId(1).injectExp(new Expression().value("request.path.dishId = response.body.id"))));
+
+        List<UnitCase> unitCases = Lists.newArrayList();
+        unitCases.add(unitCase1);
+        unitCases.add(unitCase2);
+
+       for (UnitCase unitCase : unitCases){
+           System.out.println("=====================================");
+           ApiRes apiRes = assertExecutor.execute(restApi, unitCase, true);
+           System.out.println(JSON.toJson(apiRes.unitId));
+           System.out.println(JSON.toJson(apiRes.restApi));
+           System.out.println(JSON.toJson(apiRes.response));
+           System.out.println(JSON.toJson(apiRes.assertRes));
+       }
     }
 }

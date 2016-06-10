@@ -24,15 +24,25 @@ public class AstExecutor {
             if(node.nodeType != AstNode.NodeType.DATA){
                 execute(node);
             }
+            if(node.nodeType == AstNode.NodeType.DATA && node.dataType == AstNode.DataType.BINDING){
+                node.setStatus(1);
+                node.returnValue = ((BindingObject)node.originValue).getObject();
+            }
         }
         //需要先修正参数
         Object[] args = new Object[root.getChildSize()];
         BindingObject bindingObject = null;
         for(int i = 0; i < root.getChildSize(); i++) {
+            //找出可能绑定的object
             if(bindingObject == null && root.getChild(i).dataType == AstNode.DataType.BINDING) {
                 bindingObject = (BindingObject)root.getChild(i).originValue;
             }
-            args[i] = root.getChild(i).get();
+            if(i == 0 && root.nodeType == AstNode.NodeType.OPERATE
+                    && ((Operator) root.originValue) == Operator.ASSIGN){
+                args[i] = root.getChild(i);
+            }else {
+                args[i] = root.getChild(i).get();
+            }
         }
         switch (root.nodeType){
             case OPERATE:

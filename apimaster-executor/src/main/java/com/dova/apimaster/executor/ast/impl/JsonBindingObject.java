@@ -14,13 +14,7 @@ public class JsonBindingObject extends BindingObject<JsonNode>{
     public JsonBindingObject(String name, JsonNode node){
         super(name,node);
     }
-    BaseOperateExecutor baseOperateExecutor = new BaseOperateExecutor(){
-        @Override
-        protected JsonNode operateAt(Object first, Object second) {
-            first = ((BindingObject)first).getObject();
-            return super.operateAt(first, second);
-        }
-    };
+    BaseOperateExecutor baseOperateExecutor = new BaseOperateExecutor();
     @JsonIgnore
     @Override
     public OperateExecutor getOperateExecutor() {

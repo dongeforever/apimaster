@@ -3,6 +3,7 @@ package com.dova.apimaster.executor.test;
 import com.dova.apimaster.common.util.JSON;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.junit.Test;
 
 /**
@@ -15,6 +16,7 @@ public class JsonSetTest {
         String json = "{\"id\":1}";
         ObjectNode root = JSON.of(json);
         root.put("id",12);
+        JsonNode idNode = root.path("id");
         System.out.println(JSON.toJson(root));
     }
 
@@ -61,5 +63,11 @@ public class JsonSetTest {
 
         Integer b = null;
         Integer c = 1 > 2 ? 0 : b;
+    }
+
+    @Test
+    public void testReplace(){
+        String origin = "http://localhost:8081/sellers/dishes/{dishId}";
+        System.out.println(origin.replaceAll("\\{dishId\\}","4835"));
     }
 }

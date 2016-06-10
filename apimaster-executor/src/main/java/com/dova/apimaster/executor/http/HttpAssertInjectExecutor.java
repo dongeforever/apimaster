@@ -1,63 +1,87 @@
 package com.dova.apimaster.executor.http;
 
-import com.dova.apimaster.common.domain.Expression;
 import com.dova.apimaster.common.domain.RestApi;
 import com.dova.apimaster.common.domain.UnitCase;
 import com.dova.apimaster.common.domain.UnitInject;
-import com.dova.apimaster.common.util.HttpClientFactory;
 import com.dova.apimaster.common.util.JSON;
 import com.dova.apimaster.executor.ast.domain.ApiRes;
 import com.dova.apimaster.executor.ast.domain.AssertResult;
-import com.dova.apimaster.executor.ast.domain.AstNode;
-import com.dova.apimaster.executor.ast.helper.Assert;
+import com.dova.apimaster.executor.ast.domain.Keyword;
 import com.dova.apimaster.executor.ast.impl.AstParseExecutor;
 import com.dova.apimaster.executor.ast.impl.JsonBindingObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.util.EntityUtils;
+import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liuzhendong on 16/6/1.
  */
 public class HttpAssertInjectExecutor {
 
-    private AstParseExecutor astParseExecutor = new AstParseExecutor();
 
+    private Cache<Integer, ApiRes> apiResCache = CacheBuilder.newBuilder()
+            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .build();
+    private AstParseExecutor astParseExecutor = new AstParseExecutor();
     private HttpExecutor httpExecutor = new HttpExecutor();
     private AssertExecutor assertExecutor = new AssertExecutor(astParseExecutor);
-    private InjectExecutor injectExecutor = new InjectExecutor(astParseExecutor);
 
+    public ApiRes getApiRes(int unitId){
+        return apiResCache.getIfPresent(unitId);
+    }
 
     public ApiRes execute(RestApi restApi){
-        JsonNode res = httpExecutor.executeHttp(restApi);
-        return  new ApiRes().response(res);
+        JsonNode response = httpExecutor.executeHttp(restApi);
+        return  new ApiRes().api(restApi).response(response);
     }
 
     public ApiRes execute(RestApi restApi,UnitCase unitCase){
-        JsonNode res = httpExecutor.executeHttp(restApi);
-        AssertResult assertResult = assertExecutor.executeAssert(unitCase,res);
-        return new ApiRes().response(res).assertRes(assertResult);
+        return execute(restApi,unitCase,false);
     }
 
-    public ApiRes execute(RestApi restApi, UnitCase unitCase, List<UnitInject> unitInjects){
-
-        JsonNode res = httpExecutor.executeHttp(restApi);
-        AssertResult result = assertExecutor.executeAssert(unitCase,res);
-        if(result.errors != 0 || result.fails != 0){
-            return new ApiRes().response(res).assertRes(result);
+    public ApiRes execute(RestApi restApi, UnitCase unitCase, boolean inject){
+        if(inject){
+            doInject(unitCase);
         }
-        //TODO inject
-        return null;
+        restApi.fillParas(unitCase);
+        JsonNode response = httpExecutor.executeHttp(restApi);
+        AssertResult assertResult = assertExecutor.executeAssert(unitCase,response);
+        ApiRes apiRes= new ApiRes(unitCase.getId()).api(restApi).response(response).assertRes(assertResult);
+        apiResCache.put(unitCase.getId(), apiRes);
+        return apiRes;
     }
 
+    private void doInject(UnitCase unitCase){
+        if(unitCase.getInjects() == null || unitCase.getInjects().size() == 0){
+            return;
+        }
+        JsonNode path = unitCase.getPathVariables() == null ? JSON.newObjectNode() : unitCase.getPathVariables();
+        JsonNode header = unitCase.getHeaders() == null ? JSON.newObjectNode() : unitCase.getHeaders();
+        JsonNode body = unitCase.getRequestBody() == null ? JSON.newObjectNode() : unitCase.getRequestBody();
+        ObjectNode request = JSON.newObjectNode();
+        request.set(Keyword.PATH, path);
+        request.set(Keyword.HEADER, header);
+        request.set(Keyword.BODY, body);
+        astParseExecutor.bindObject(new JsonBindingObject(Keyword.REQUEST, request));
+        for(UnitInject unitInject : unitCase.getInjects()){
+            if(unitInject.getFromUnitId() <= 0
+                    || Strings.isNullOrEmpty(unitInject.getInjectExp().getValue())
+                    || apiResCache.getIfPresent(unitInject.getFromUnitId()) == null){
+                continue;
+            }
+            ApiRes apiRes = apiResCache.getIfPresent(unitInject.getFromUnitId());
+            astParseExecutor.bindObject(new JsonBindingObject(Keyword.RESPONSE, apiRes.response));
+            astParseExecutor.parseAndExecute(unitInject.getInjectExp().getValue());
+        }
+
+        unitCase.setPathVariables(request.get(Keyword.PATH));
+        unitCase.setHeaders(request.get(Keyword.HEADER));
+        unitCase.setRequestBody(request.get(Keyword.BODY));
+    }
 
 
 }

@@ -5,6 +5,7 @@ import com.dova.apimaster.common.domain.Header;
 import com.dova.apimaster.common.domain.RestApi;
 import com.dova.apimaster.common.util.HttpClientFactory;
 import com.dova.apimaster.common.util.JSON;
+import com.dova.apimaster.executor.ast.domain.Keyword;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
@@ -20,6 +21,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -70,13 +72,13 @@ public class HttpExecutor {
         ObjectNode responseNode  = JSON.newObjectNode();
         try{
             if(restApi.getResponseBodyType() == RestApi.BodyType.JSON && text.length() > 0){
-                responseNode.set("text", JSON.of(text));
+                responseNode.set(Keyword.BODY, JSON.of(text));
             }else {
-                responseNode.put("text",text);
+                responseNode.put(Keyword.BODY,text);
             }
         }catch (Exception e){
             exception = e.getMessage();
-            responseNode.put("text", text);
+            responseNode.put(Keyword.BODY, text);
         }
         responseNode.put("status",status);
         responseNode.put("exception",exception);
@@ -84,40 +86,48 @@ public class HttpExecutor {
 
     }
 
-    private String injectPathVariables(String originUrl, List<Field> pathVariables){
+    private String injectPathVariables(String originUrl, JsonNode pathVariables){
         if(pathVariables == null || pathVariables.size() == 0){
             return originUrl;
         }
-        for (Field field: pathVariables){
-            originUrl.replaceAll(String.format("{%s}",field.getKey()),field.getValue());
+        Iterator<String> it = pathVariables.fieldNames();
+        while (it.hasNext()){
+            String key = it.next();
+            String value = pathVariables.get(key).asText();
+            originUrl = originUrl.replaceAll(String.format("\\{%s\\}",key), value);
         }
         return originUrl;
     }
 
 
     private RequestBuilder addHeaders(RequestBuilder buider, RestApi restApi){
-        if(restApi.getHeaders() == null) return buider;
-        for (Header header : restApi.getHeaders()){
-            buider.addHeader(header.getKey(), header.getValue());
+        if(restApi.getHeaders() == null || restApi.getHeaders().size() == 0) return buider;
+        Iterator<String> it = restApi.getHeaders().fieldNames();
+        while (it.hasNext()){
+            String key = it.next();
+            String value = restApi.getHeaders().get(key).asText();
+            buider.addHeader(key, value);
         }
         return buider;
     }
 
 
     private RequestBuilder addHttpEntity(RequestBuilder buider, RestApi restApi)throws Exception{
-        if(Strings.isNullOrEmpty(restApi.getRequestBody())){
+        if(restApi.getRequest() == null || restApi.getRequest().size()==0){
             return buider;
         }
         HttpEntity entity = null;
         if(restApi.getRequestBodyType() == RestApi.BodyType.FORM){
             List<NameValuePair> data = new ArrayList<NameValuePair>();
-            List<Field>  paras = JSON.safeReadList(restApi.getRequestBody(), Field.class);
-            for(Field field : paras){
-                data.add(new BasicNameValuePair(field.getKey(), field.getValue()));
+            Iterator<String> it = restApi.getRequest().fieldNames();
+            while (it.hasNext()){
+                String key = it.next();
+                String value = restApi.getRequest().get(key).asText();
+                data.add(new BasicNameValuePair(key, value));
             }
             entity = new UrlEncodedFormEntity(data, "UTF-8");
         }else {
-            entity = new StringEntity(restApi.getRequestBody(),"utf-8");
+            entity = new StringEntity(JSON.uncheckedToJson(restApi.getRequest()),"utf-8");
             if(restApi.getRequestBodyType() == RestApi.BodyType.JSON){
                 buider.addHeader("Content-Type","application/json");
             }

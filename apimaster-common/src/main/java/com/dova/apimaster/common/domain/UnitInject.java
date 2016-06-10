@@ -8,7 +8,33 @@ import java.util.List;
 public class UnitInject {
 
     private int fromUnitId;
-    private int toUnitId;
-    private int groupId;
-    private List<Expression> injections;
+    private Expression injectExp;
+
+
+    public int getFromUnitId() {
+        return fromUnitId;
+    }
+
+    public void setFromUnitId(int fromUnitId) {
+        this.fromUnitId = fromUnitId;
+    }
+
+    public Expression getInjectExp() {
+        return injectExp;
+    }
+
+    public void setInjectExp(Expression injectExp) {
+        this.injectExp = injectExp;
+    }
+
+
+
+    public UnitInject fromUnitId(int fromUnitId){
+        this.fromUnitId = fromUnitId;
+        return this;
+    }
+    public UnitInject injectExp(Expression injectExp){
+        this.injectExp = injectExp;
+        return this;
+    }
 }

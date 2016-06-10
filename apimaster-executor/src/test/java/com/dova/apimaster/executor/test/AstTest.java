@@ -27,18 +27,12 @@ public class AstTest {
 
     ObjectNode root = JSON.newObjectNode();
     {
-        root.put("status","\"200");
+        root.put("status","200");
         root.put("text","this is the repsonse");
     }
 
     BindingObject bindingObject = new BindingObject<JsonNode>("response",root) {
-        BaseOperateExecutor baseOperateExecutor = new BaseOperateExecutor(){
-            @Override
-            protected JsonNode operateAt(Object first, Object second) {
-                first = ((BindingObject)first).getObject();
-                return super.operateAt(first, second);
-            }
-        };
+        BaseOperateExecutor baseOperateExecutor = new BaseOperateExecutor();
         @JsonIgnore
         @Override
         public OperateExecutor getOperateExecutor() {
@@ -70,10 +64,11 @@ public class AstTest {
     public void testAstParse()throws Exception{
         Binding binding = new Binding();
         binding.bindObject(bindingObject);
-        AstNode root = astParser.parse("response.status == \"\\\"200\"", binding);
+        AstNode root = astParser.parse("response.status = 100", binding);
         System.out.println(JSON.toJson(root));
         astExecutor.execute(root);
         System.out.println(root.get());
+        System.out.println(JSON.uncheckedToJson(bindingObject.getObject()));
     }
 
 

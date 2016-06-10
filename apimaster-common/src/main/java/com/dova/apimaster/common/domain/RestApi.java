@@ -1,5 +1,7 @@
 package com.dova.apimaster.common.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.List;
 
 /**
@@ -35,12 +37,12 @@ public class RestApi {
     private RequestMethod method;     // 请求函数 get,post,put,delete
 
 
-    private List<Field> pathVariables; //
-    private List<Header> headers;
+    private JsonNode pathVariables; //
+    private JsonNode headers;
     private BodyType requestBodyType; //form,text,json
-    private String requestBody;   //
+    private JsonNode request;   //
     private BodyType responseBodyType;   //json,text,xml
-    private String responseBody;
+    private JsonNode response;
 
 
     public int getId() {
@@ -99,19 +101,19 @@ public class RestApi {
         this.method = method;
     }
 
-    public List<Field> getPathVariables() {
+    public JsonNode getPathVariables() {
         return pathVariables;
     }
 
-    public void setPathVariables(List<Field> pathVariables) {
+    public void setPathVariables(JsonNode pathVariables) {
         this.pathVariables = pathVariables;
     }
 
-    public List<Header> getHeaders() {
+    public JsonNode getHeaders() {
         return headers;
     }
 
-    public void setHeaders(List<Header> headers) {
+    public void setHeaders(JsonNode headers) {
         this.headers = headers;
     }
 
@@ -123,13 +125,6 @@ public class RestApi {
         this.requestBodyType = requestBodyType;
     }
 
-    public String getRequestBody() {
-        return requestBody;
-    }
-
-    public void setRequestBody(String requestBody) {
-        this.requestBody = requestBody;
-    }
 
     public BodyType getResponseBodyType() {
         return responseBodyType;
@@ -139,11 +134,25 @@ public class RestApi {
         this.responseBodyType = responseBodyType;
     }
 
-    public String getResponseBody() {
-        return responseBody;
+    public JsonNode getRequest() {
+        return request;
     }
 
-    public void setResponseBody(String responseBody) {
-        this.responseBody = responseBody;
+    public void setRequest(JsonNode request) {
+        this.request = request;
+    }
+
+    public JsonNode getResponse() {
+        return response;
+    }
+
+    public void setResponse(JsonNode response) {
+        this.response = response;
+    }
+
+    public void fillParas(UnitCase unitCase){
+        this.pathVariables = unitCase.getPathVariables();
+        this.headers = unitCase.getHeaders();
+        this.request = unitCase.getRequestBody();
     }
 }

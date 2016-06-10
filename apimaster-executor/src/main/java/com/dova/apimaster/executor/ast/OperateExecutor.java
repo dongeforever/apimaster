@@ -42,6 +42,8 @@ public abstract class OperateExecutor {
                 return operateAnd(args[0], args[1]);
             case MOD:
                 return operateMod(args[0], args[1]);
+            case ASSIGN:
+                return operateAssign(args[0], args[1]);
             default:
                 throw new AstException(AstError.UnsupportedOperation, "暂时不支持的操作:" + operator.desc);
         }
@@ -69,6 +71,8 @@ public abstract class OperateExecutor {
     protected abstract Integer operateMod(Object first, Object second);
 
     protected abstract Object operateDiv(Object first,Object second);
+
+    protected abstract Object operateAssign(Object first, Object second);
 
 
     public void print(String format,Object... args) {

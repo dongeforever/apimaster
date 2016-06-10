@@ -2,6 +2,10 @@ package com.dova.apimaster.executor.ast.impl;
 
 import com.dova.apimaster.common.util.JSON;
 import com.dova.apimaster.executor.ast.OperateExecutor;
+import com.dova.apimaster.executor.ast.domain.AstError;
+import com.dova.apimaster.executor.ast.domain.AstNode;
+import com.dova.apimaster.executor.ast.domain.Operator;
+import com.dova.apimaster.executor.ast.helper.Assert;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.IntNode;
@@ -73,6 +77,28 @@ public class BaseOperateExecutor extends OperateExecutor{
         return  compare == 0;
     }
 
+
+    @Override
+    protected Object operateAssign(Object first, Object second){
+        print("ASSIGN first:%s second:%s", first, second);
+        AstNode astNode = (AstNode)first;
+        Assert.assertion((Operator)astNode.originValue == Operator.AT && astNode.getChildSize() == 2, AstError.UnExpected,"赋值操作符的前一个操作符必须是 AT");
+        ObjectNode parent = (ObjectNode) astNode.getChild(0).get();
+        String name = (String)astNode.getChild(1).get();
+
+        if(second instanceof JsonNode){
+            parent.set(name,(JsonNode) second);
+        }else if(second instanceof Integer){
+            parent.put(name, (Integer)second);
+        }else if(second instanceof Double){
+            parent.put(name, (Double) second);
+        }else if(second instanceof String ){
+            parent.put(name, (String)second);
+        }else {
+            throw new RuntimeException("Assign unknown second type:" + second.getClass());
+        }
+        return parent.get(name);
+    }
 
     @Override
     protected Boolean operateLt(Object first, Object second){

@@ -1,5 +1,7 @@
 package com.dova.apimaster.common.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.List;
 
 /**
@@ -10,14 +12,17 @@ public class UnitCase {
     private int id;
     private int restApiId;
     private int groupId;  // 默认为0表示没有分组
-    private List<Expression> assertions;
 
 
     //来自RestApi表的冗余字段
-    private List<Field> pathVariables;
-    private List<Header> headers;
-    private String requestBody;
-    private String responseBody;
+    private JsonNode pathVariables;
+    private JsonNode headers;
+    private JsonNode requestBody;
+    private JsonNode responseBody;
+    //注入
+    private List<UnitInject>  injects;
+    //校验
+    private List<Expression> assertions;
 
     public int getId() {
         return id;
@@ -51,35 +56,43 @@ public class UnitCase {
         this.assertions = assertions;
     }
 
-    public List<Field> getPathVariables() {
+    public JsonNode getPathVariables() {
         return pathVariables;
     }
 
-    public void setPathVariables(List<Field> pathVariables) {
+    public void setPathVariables(JsonNode pathVariables) {
         this.pathVariables = pathVariables;
     }
 
-    public List<Header> getHeaders() {
+    public JsonNode getHeaders() {
         return headers;
     }
 
-    public void setHeaders(List<Header> headers) {
+    public void setHeaders(JsonNode headers) {
         this.headers = headers;
     }
 
-    public String getRequestBody() {
+    public JsonNode getRequestBody() {
         return requestBody;
     }
 
-    public void setRequestBody(String requestBody) {
+    public void setRequestBody(JsonNode requestBody) {
         this.requestBody = requestBody;
     }
 
-    public String getResponseBody() {
+    public JsonNode getResponseBody() {
         return responseBody;
     }
 
-    public void setResponseBody(String responseBody) {
+    public void setResponseBody(JsonNode responseBody) {
         this.responseBody = responseBody;
+    }
+
+    public List<UnitInject> getInjects() {
+        return injects;
+    }
+
+    public void setInjects(List<UnitInject> injects) {
+        this.injects = injects;
     }
 }
