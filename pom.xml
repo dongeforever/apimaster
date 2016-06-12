@@ -9,6 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
+
     <modules>
         <module>apimaster-common</module>
         <module>apimaster-dao</module>
