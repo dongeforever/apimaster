@@ -40,9 +40,9 @@ public class RestApi {
     private JsonNode pathVariables; //
     private JsonNode headers;
     private BodyType requestBodyType; //form,text,json
-    private JsonNode request;   //
+    private JsonNode requestBody;   //
     private BodyType responseBodyType;   //json,text,xml
-    private JsonNode response;
+    private JsonNode responseBody;
 
 
     public int getId() {
@@ -134,25 +134,25 @@ public class RestApi {
         this.responseBodyType = responseBodyType;
     }
 
-    public JsonNode getRequest() {
-        return request;
+    public JsonNode getRequestBody() {
+        return requestBody;
     }
 
-    public void setRequest(JsonNode request) {
-        this.request = request;
+    public void setRequestBody(JsonNode requestBody) {
+        this.requestBody = requestBody;
     }
 
-    public JsonNode getResponse() {
-        return response;
+    public JsonNode getResponseBody() {
+        return responseBody;
     }
 
-    public void setResponse(JsonNode response) {
-        this.response = response;
+    public void setResponseBody(JsonNode responseBody) {
+        this.responseBody = responseBody;
     }
 
     public void fillParas(UnitCase unitCase){
         this.pathVariables = unitCase.getPathVariables();
         this.headers = unitCase.getHeaders();
-        this.request = unitCase.getRequestBody();
+        this.requestBody = unitCase.getRequestBody();
     }
 }

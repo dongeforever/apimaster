@@ -7,11 +7,10 @@ import com.dova.apimaster.common.domain.UnitInject;
 import com.dova.apimaster.common.util.JSON;
 import com.dova.apimaster.executor.ast.domain.ApiRes;
 import com.dova.apimaster.executor.ast.helper.PrintUtil;
-import com.dova.apimaster.executor.http.HttpAssertInjectExecutor;
+import com.dova.apimaster.executor.HttpAssertInjectExecutor;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

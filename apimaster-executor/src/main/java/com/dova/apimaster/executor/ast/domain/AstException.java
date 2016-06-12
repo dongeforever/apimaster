@@ -3,6 +3,7 @@ package com.dova.apimaster.executor.ast.domain;
 /**
  * Created by liuzhendong on 16/5/27.
  */
+
 public class AstException extends RuntimeException {
 
     private AstError error;

@@ -5,9 +5,6 @@ import com.dova.apimaster.executor.ast.domain.AstException;
 import com.dova.apimaster.executor.ast.domain.Operator;
 import com.dova.apimaster.executor.ast.helper.Assert;
 import com.dova.apimaster.executor.ast.helper.PrintUtil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Created by liuzhendong on 16/5/23.

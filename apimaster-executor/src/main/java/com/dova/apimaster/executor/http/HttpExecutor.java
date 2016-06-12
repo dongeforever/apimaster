@@ -1,14 +1,11 @@
 package com.dova.apimaster.executor.http;
 
-import com.dova.apimaster.common.domain.Field;
-import com.dova.apimaster.common.domain.Header;
 import com.dova.apimaster.common.domain.RestApi;
 import com.dova.apimaster.common.util.HttpClientFactory;
 import com.dova.apimaster.common.util.JSON;
 import com.dova.apimaster.executor.ast.domain.Keyword;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -113,21 +110,21 @@ public class HttpExecutor {
 
 
     private RequestBuilder addHttpEntity(RequestBuilder buider, RestApi restApi)throws Exception{
-        if(restApi.getRequest() == null || restApi.getRequest().size()==0){
+        if(restApi.getRequestBody() == null || restApi.getRequestBody().size()==0){
             return buider;
         }
         HttpEntity entity = null;
         if(restApi.getRequestBodyType() == RestApi.BodyType.FORM){
             List<NameValuePair> data = new ArrayList<NameValuePair>();
-            Iterator<String> it = restApi.getRequest().fieldNames();
+            Iterator<String> it = restApi.getRequestBody().fieldNames();
             while (it.hasNext()){
                 String key = it.next();
-                String value = restApi.getRequest().get(key).asText();
+                String value = restApi.getRequestBody().get(key).asText();
                 data.add(new BasicNameValuePair(key, value));
             }
             entity = new UrlEncodedFormEntity(data, "UTF-8");
         }else {
-            entity = new StringEntity(JSON.uncheckedToJson(restApi.getRequest()),"utf-8");
+            entity = new StringEntity(JSON.uncheckedToJson(restApi.getRequestBody()),"utf-8");
             if(restApi.getRequestBodyType() == RestApi.BodyType.JSON){
                 buider.addHeader("Content-Type","application/json");
             }

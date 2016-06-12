@@ -1,6 +1,5 @@
 package com.dova.apimaster.executor.ast.impl;
 
-import com.dova.apimaster.common.util.JSON;
 import com.dova.apimaster.executor.ast.OperateExecutor;
 import com.dova.apimaster.executor.ast.domain.AstError;
 import com.dova.apimaster.executor.ast.domain.AstNode;
@@ -10,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
 
 /**
  * Created by liuzhendong on 16/5/23.
@@ -81,6 +79,9 @@ public class BaseOperateExecutor extends OperateExecutor{
     @Override
     protected Object operateAssign(Object first, Object second){
         print("ASSIGN first:%s second:%s", first, second);
+        if(second instanceof JsonNode && ((JsonNode) second).isMissingNode()){
+            return first;
+        }
         AstNode astNode = (AstNode)first;
         Assert.assertion((Operator)astNode.originValue == Operator.AT && astNode.getChildSize() == 2, AstError.UnExpected,"赋值操作符的前一个操作符必须是 AT");
         ObjectNode parent = (ObjectNode) astNode.getChild(0).get();
