@@ -3,6 +3,7 @@ package com.dova.apimaster.executor;
 import com.dova.apimaster.common.domain.RestCaseSummary;
 import com.dova.apimaster.common.util.JSON;
 import com.dova.apimaster.executor.ast.domain.ApiRes;
+import com.dova.apimaster.executor.ast.helper.PrintUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -63,8 +64,8 @@ public class RestCaseTool {
 
     }
     public static void main(String[] args)throws Exception{
-        if(args.length != 1){
-            System.out.println("args length must gt 0, but " + args.length);
+        if(args.length == 0){
+            System.out.println("args length must gt 0, but");
             System.exit(1);
         }
         if(Strings.isNullOrEmpty(args[0])){
@@ -72,6 +73,10 @@ public class RestCaseTool {
             System.exit(1);
         }
         System.out.println("args[0]:" + args[0]);
+        if(args.length >= 2 && args[1].equals("debug")){
+            PrintUtil.debug = true;
+            System.out.println("enable debug");
+        }
         runFromStream(new FileInputStream(args[0]));
     }
 
