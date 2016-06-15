@@ -15,6 +15,8 @@ public abstract class OperateExecutor {
     public  final Object exeOperate(Operator operator, Object[] args){
         Assert.assertion(operator.argNum == args.length, AstError.ValueNumError,"参数个数与操作符不符 op:%s argsNum:%d", operator.desc, args.length);
         switch (operator){
+            case MINUS:
+                return operateMinus(args[0],args[1]);
             case ADD:
                 return operateAdd(args[0],args[1]);
             case MUTLI:
@@ -41,12 +43,16 @@ public abstract class OperateExecutor {
                 return operateMod(args[0], args[1]);
             case ASSIGN:
                 return operateAssign(args[0], args[1]);
+            case INDEX:
+                return operateIndex(args[0], args[1]);
             default:
                 throw new AstException(AstError.UnsupportedOperation, "暂时不支持的操作:" + operator.desc);
         }
     }
 
     protected abstract Object operateAdd(Object first, Object second);
+
+    protected abstract Object operateMinus(Object first, Object second);
 
     protected abstract Object operateMulti(Object first, Object second);
 
@@ -70,6 +76,8 @@ public abstract class OperateExecutor {
     protected abstract Object operateDiv(Object first,Object second);
 
     protected abstract Object operateAssign(Object first, Object second);
+
+    protected abstract Object operateIndex(Object first, Object second);
 
 
     public void print(String format,Object... args) {

@@ -4,9 +4,12 @@ import com.dova.apimaster.common.domain.Expression;
 import com.dova.apimaster.common.domain.UnitCase;
 import com.dova.apimaster.executor.ast.domain.AssertResult;
 import com.dova.apimaster.executor.ast.domain.AstNode;
+import com.dova.apimaster.executor.ast.domain.Keyword;
+import com.dova.apimaster.executor.ast.helper.UnitCaseHelper;
 import com.dova.apimaster.executor.ast.impl.AstParseExecutor;
 import com.dova.apimaster.executor.ast.impl.JsonBindingObject;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Created by liuzhendong on 16/6/6.
@@ -18,10 +21,12 @@ public class AssertExecutor {
         this.astParseExecutor = astParseExecutor;
     }
     public AssertResult executeAssert(UnitCase unitCase, JsonNode response){
-        astParseExecutor.bindObject(new JsonBindingObject("response",response));
+        ObjectNode request = UnitCaseHelper.createRequestNode(unitCase);
+        astParseExecutor.bindObject(new JsonBindingObject(Keyword.REQUEST, request));
+        astParseExecutor.bindObject(new JsonBindingObject(Keyword.RESPONSE, response));
         AssertResult assertResult = new AssertResult();
         assertResult.asserts = unitCase.getAssertions().size();
-
+        
         if(response.path("status").asInt() == 0){
             assertResult.errors = 1;
             assertResult.remark = response.path("exception").asText();

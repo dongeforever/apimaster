@@ -27,11 +27,26 @@ public class AstParser {
             this.opNode = other.opNode;
             this.valueNode = other.valueNode;
         }
+        public ParseResult offset(int offset){
+            this.offset = offset;
+            return this;
+        }
+        public ParseResult opNode(AstNode opNode){
+            this.opNode = opNode;
+            return this;
+        }
+        public ParseResult valueNode(AstNode valueNode){
+            this.valueNode = valueNode;
+            return this;
+        }
     }
     public AstNode parse(String expression){
         return parse(expression, null);
     }
     public AstNode parse(String expression, Binding binding){
+        ParseResult res = parseUntil(expression, binding, 0, null);
+        return  res.valueNode;
+        /*
         int i = 0;
         int lastStatus = -1; //表示默认,0表示值,1表示操作符
         ArrayDeque<AstNode>  opStack = new ArrayDeque<>();
@@ -75,6 +90,75 @@ public class AstParser {
         finishConcat(opStack, valueStack,binding);
         Assert.assertion(opStack.size() == 0 && valueStack.size() == 1, AstError.UnExpected, "unexpected result opStack:%d valueStack:%d", opStack.size(), valueStack.size());
         return valueStack.pop();
+        */
+    }
+
+
+
+    public ParseResult parseUntil(String expression, Binding binding, int start, Character endChar){
+        int i = start;
+        int lastStatus = -1; //表示默认,0表示值,1表示操作符
+        ArrayDeque<AstNode>  opStack = new ArrayDeque<>();
+        ArrayDeque<AstNode>  valueStack = new ArrayDeque<>();
+        for(;i < expression.length();){
+            char c = expression.charAt(i);
+            if(endChar != null && c == endChar.charValue()){
+                break;
+            }
+            //空白符直接跳过,//TODO 有些操作符与值之间的空白符不能跳过,比如.
+            if(CharHelper.isBlank(c)){
+                i++;
+                continue;
+            }
+            //小括号递归处理
+            if(c == '('){
+                i++;
+                ParseResult recursiveRes = parseUntil(expression, binding, i, ')');
+                i = i + recursiveRes.offset;
+                Assert.assertion(i < expression.length() && expression.charAt(i) == ')',AstError.UnExpected,"the left bracket num must eq the right bracket while finished, index:%d char:%c",i-recursiveRes.offset - 1,expression.charAt(i - recursiveRes.offset - 1));
+                lastStatus = checkParseResult(recursiveRes, opStack, valueStack, binding, lastStatus,expression,i - recursiveRes.offset);
+                i++;
+                continue;
+            }
+            //中括号递归处理
+            if(c == '['){
+                AstNode astNode = new AstNode(AstNode.NodeType.OPERATE, AstNode.DataType.NODATA);
+                astNode.originValue = Operator.INDEX;
+                ParseResult squareBracket = new ParseResult().opNode(astNode);
+                lastStatus = checkParseResult(squareBracket,opStack,valueStack,binding,lastStatus,expression,i);
+                i++;
+                ParseResult recursiveRes = parseUntil(expression, binding, i, ']');
+                System.out.println(i + " " + recursiveRes.offset);
+                i = i + recursiveRes.offset;
+                Assert.assertion(i < expression.length() && expression.charAt(i) == ']',AstError.UnExpected,"the left square bracket num must eq the right square bracket while finished,index:%d char:%c",i - recursiveRes.offset - 1,expression.charAt(i - recursiveRes.offset - 1));
+                lastStatus = checkParseResult(recursiveRes, opStack, valueStack, binding, lastStatus,expression,i-recursiveRes.offset);
+                i++;
+                continue;
+            }
+
+            //可能是操作符
+            if(CharHelper.isOpStart(c)){
+                ParseResult opRes = parseOperator(expression,i);
+                print("parse Op succ start:%d offset:%d", i, opRes.offset);
+                if(opRes.offset > 0){
+                    lastStatus = checkParseResult(opRes, opStack, valueStack, binding, lastStatus,expression,i);
+                    i += opRes.offset;
+                    continue;
+                }
+            }
+
+            //值
+            ParseResult valueRes = parseValue(expression,i);
+            print("parse Value succ start:%d offset:%d", i, valueRes.offset);
+            if(valueRes.offset > 0){
+                lastStatus = checkParseResult(valueRes, opStack, valueStack, binding, lastStatus, expression,i);
+                i += valueRes.offset;
+                continue;
+            }
+        }
+        finishConcat(opStack, valueStack,binding);
+        Assert.assertion(opStack.size() == 0 && valueStack.size() == 1, AstError.UnExpected, "unexpected result opStack:%d valueStack:%d", opStack.size(), valueStack.size());
+        return new ParseResult().offset(i - start).valueNode(valueStack.pop());
     }
 
     /*
@@ -117,7 +201,7 @@ public class AstParser {
             //值后面不能接左括号
             Assert.assertion(currOp != Operator.BRACKET1,AstError.ValueNoLeftBracket,"Value-No-Left-Bracket index:%d char:%c",start,expression.charAt(start));
             if(currOp == Operator.BRACKET2){
-                Assert.assertion(opStack.size() > 1 && (Operator)(opStack.peek().originValue)!=Operator.BRACKET1, AstError.UnExpected,"右括号前必须要有表达式");
+                Assert.assertion(opStack.size() > 1 && (Operator)(opStack.peek().originValue)!=Operator.BRACKET1, AstError.UnExpected,"右括号前必须要有表达式 index:%d char:%c",start,expression.charAt(start));
                 finishConcatUntilLeftBracket(opStack,valueStack,binding);
                 return 0;
             }
@@ -276,7 +360,7 @@ public class AstParser {
                 sb.append(c);
                 continue;
             }
-            if(CharHelper.isOpStart(c) || CharHelper.isBlank(c)){
+            if(CharHelper.isOpStart(c) || CharHelper.isOpEnd(c)|| CharHelper.isBlank(c)){
                 break;
             }
             if(CharHelper.isDigit(c)){
@@ -311,9 +395,7 @@ public class AstParser {
 
 
     private void  print(String format,Object... args){
-        if(debug){
-            PrintUtil.print(format,args);
-        }
+        PrintUtil.print(format,args);
     }
 
     public boolean isDebug() {

@@ -6,9 +6,13 @@ import com.dova.apimaster.executor.ast.domain.AstNode;
 import com.dova.apimaster.executor.ast.domain.Operator;
 import com.dova.apimaster.executor.ast.helper.Assert;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.util.Annotations;
+
+import java.util.List;
 
 /**
  * Created by liuzhendong on 16/5/23.
@@ -29,6 +33,39 @@ public class BaseOperateExecutor extends OperateExecutor{
         Integer a = (Integer)first;
         Integer b = (Integer)second;
         return a+b;
+    }
+
+    @Override
+    protected Object operateMinus(Object first, Object second){
+        print("MINUS first:%s second:%s", first, second);
+        first =  convertJsonNode(first);
+        second = convertJsonNode(second);
+        if(first instanceof Double || second instanceof Double){
+            return Double.valueOf(String.valueOf(first)) - Double.valueOf(String.valueOf(second));
+        }
+        Integer a = (Integer)first;
+        Integer b = (Integer)second;
+        return a-b;
+    }
+
+    @Override
+    protected Object operateIndex(Object first, Object second){
+        print("INDEX first:%s second:%s", first, second);
+        second = convertJsonNode(second);
+        Integer index = (Integer)second;
+        if(first instanceof List){
+            if(((List) first).size() <= index){
+                throw new IndexOutOfBoundsException(String.format("size:%d index:%d",((List) first).size(),index));
+            }
+            return ((List) first).get(index);
+        }else if(first instanceof ArrayNode){
+            if(((ArrayNode) first).size() <= index){
+                throw new IndexOutOfBoundsException(String.format("size:%d index:%d",((ArrayNode) first).size(),index));
+            }
+            return ((ArrayNode) first).get(index);
+        }else {
+            throw new RuntimeException("unsupported type for INDEX," + first.getClass());
+        }
     }
 
     @Override
@@ -70,9 +107,13 @@ public class BaseOperateExecutor extends OperateExecutor{
         if(first ==  second || first.equals(second)){
             return true;
         }
-
+        first = convertJsonNode(first);
+        second = convertJsonNode(second);
+        return first.equals(second);
+        /*
         int compare = compare(first,second);
         return  compare == 0;
+        */
     }
 
 

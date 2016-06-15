@@ -11,6 +11,7 @@ import com.dova.apimaster.executor.ast.helper.PrintUtil;
 import com.dova.apimaster.executor.ast.impl.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 
@@ -53,9 +54,9 @@ public class AstTest {
     @Test
     public void parseNumricExpression()throws Exception{
         System.out.println(CharHelper.getOpStart());
-        AstNode root = astParser.parse("(1+2)*3+4 == 13 && (1>1+1 || 1+2 >=3) || (12+1)>1");
-        astExecutor.execute(root);
+        AstNode root = astParser.parse("(1+1)*(2*1-1)");
         System.out.println(JSON.toJson(root));
+        astExecutor.execute(root);
         System.out.println(root.get());
     }
 
@@ -95,5 +96,23 @@ public class AstTest {
     }
 
 
+    @Test
+    public void testIndex(){
+        PrintUtil.debug = true;
+        AstParseExecutor astParseExecutor = new AstParseExecutor();
+        ObjectNode root = JSON.newObjectNode();
+        ArrayNode arrayNode = root.putArray("ids");
+        arrayNode.add(123);
+        arrayNode.add(234);
+        BindingObject bindingObject = new JsonBindingObject("response", root);
+        astParseExecutor.bindObject(bindingObject);
+        List<String> asserts = new ArrayList<>();
+        asserts.add("response.ids[(1*2)-1]");
+        AstNode res = astParseExecutor.parseAndExecute(asserts.get(0));
+        System.out.println(JSON.uncheckedToJson(res));
+        astExecutor.execute(res);
+        System.out.println(res.get());
+        PrintUtil.debug = false;
+    }
 
 }

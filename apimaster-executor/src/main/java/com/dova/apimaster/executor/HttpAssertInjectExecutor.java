@@ -7,6 +7,7 @@ import com.dova.apimaster.common.util.JSON;
 import com.dova.apimaster.executor.ast.domain.ApiRes;
 import com.dova.apimaster.executor.ast.domain.AssertResult;
 import com.dova.apimaster.executor.ast.domain.Keyword;
+import com.dova.apimaster.executor.ast.helper.UnitCaseHelper;
 import com.dova.apimaster.executor.ast.impl.AstParseExecutor;
 import com.dova.apimaster.executor.ast.impl.JsonBindingObject;
 import com.dova.apimaster.executor.http.AssertExecutor;
@@ -61,13 +62,7 @@ public class HttpAssertInjectExecutor {
         if(unitCase.getInjects() == null || unitCase.getInjects().size() == 0){
             return;
         }
-        JsonNode path = unitCase.getPathVariables() == null ? JSON.newObjectNode() : unitCase.getPathVariables();
-        JsonNode header = unitCase.getHeaders() == null ? JSON.newObjectNode() : unitCase.getHeaders();
-        JsonNode body = unitCase.getRequestBody() == null ? JSON.newObjectNode() : unitCase.getRequestBody();
-        ObjectNode request = JSON.newObjectNode();
-        request.set(Keyword.PATH, path);
-        request.set(Keyword.HEADER, header);
-        request.set(Keyword.BODY, body);
+        ObjectNode request = UnitCaseHelper.createRequestNode(unitCase);
         astParseExecutor.bindObject(new JsonBindingObject(Keyword.REQUEST, request));
         for(UnitInject unitInject : unitCase.getInjects()){
             if(unitInject.getFromUnitId() <= 0

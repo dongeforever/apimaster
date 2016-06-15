@@ -12,6 +12,8 @@ public class CharHelper {
 
     private static char[] digits = {'0','1','2','3','4','5','6','7','8','9'};
 
+    private static char[] opEnd = {']',')'};
+
     private static char[] opStart = Operator.getStarts();
 
     private static char[] blanks = {
@@ -52,6 +54,10 @@ public class CharHelper {
 
     public static boolean isBlank(char c){
         return contains(blanks,c);
+    }
+
+    public static boolean isOpEnd(char c){
+        return contains(opEnd, c);
     }
 
 

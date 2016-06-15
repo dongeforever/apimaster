@@ -18,7 +18,11 @@ public class AstExecutor {
     public void execute(AstNode root){
         //TODO 递归改为循环,可以提高效率,并且避免StackOverflow
         Assert.assertion(root != null, AstError.InvalidArgs,"root is null");
-        Assert.assertion(root.nodeType != AstNode.NodeType.DATA, AstError.InvalidArgs,"root's nodeType must not be DATA");
+        if(root.nodeType == AstNode.NodeType.DATA){
+            root.setStatus(1);
+            root.returnValue = root.originValue;
+            return;
+        }
         for(int i = 0; i < root.getChildSize(); i++){
             AstNode node = root.getChild(i);
             if(node.nodeType != AstNode.NodeType.DATA){
