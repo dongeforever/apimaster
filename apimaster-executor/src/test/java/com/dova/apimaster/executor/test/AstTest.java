@@ -32,7 +32,7 @@ public class AstTest {
         root.put("text","this is the repsonse");
     }
 
-    BindingObject bindingObject = new BindingObject<JsonNode>("response",root) {
+    BindingObject bindingObject = new BindingObject("response",root) {
         BaseOperateExecutor baseOperateExecutor = new BaseOperateExecutor();
         @JsonIgnore
         @Override
@@ -54,7 +54,8 @@ public class AstTest {
     @Test
     public void parseNumricExpression()throws Exception{
         System.out.println(CharHelper.getOpStart());
-        AstNode root = astParser.parse("(1+1)*(2*1-1)");
+        Binding binding = new Binding();
+        AstNode root = astParser.parse("0+timestamp", binding);
         System.out.println(JSON.toJson(root));
         astExecutor.execute(root);
         System.out.println(root.get());

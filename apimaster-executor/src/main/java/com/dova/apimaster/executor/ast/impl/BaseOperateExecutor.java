@@ -30,8 +30,8 @@ public class BaseOperateExecutor extends OperateExecutor{
         if(first instanceof Double || second instanceof  Double){
             return Double.valueOf(String.valueOf(first)) + Double.valueOf(String.valueOf(second));
         }
-        Integer a = (Integer)first;
-        Integer b = (Integer)second;
+        Long a = (Long)first;
+        Long b = (Long)second;
         return a+b;
     }
 
@@ -43,8 +43,8 @@ public class BaseOperateExecutor extends OperateExecutor{
         if(first instanceof Double || second instanceof Double){
             return Double.valueOf(String.valueOf(first)) - Double.valueOf(String.valueOf(second));
         }
-        Integer a = (Integer)first;
-        Integer b = (Integer)second;
+        Long a = (Long)first;
+        Long b = (Long)second;
         return a-b;
     }
 
@@ -52,17 +52,17 @@ public class BaseOperateExecutor extends OperateExecutor{
     protected Object operateIndex(Object first, Object second){
         print("INDEX first:%s second:%s", first, second);
         second = convertJsonNode(second);
-        Integer index = (Integer)second;
+        Long index = (Long)second;
         if(first instanceof List){
             if(((List) first).size() <= index){
                 throw new IndexOutOfBoundsException(String.format("size:%d index:%d",((List) first).size(),index));
             }
-            return ((List) first).get(index);
+            return ((List) first).get(index.intValue());
         }else if(first instanceof ArrayNode){
             if(((ArrayNode) first).size() <= index){
                 throw new IndexOutOfBoundsException(String.format("size:%d index:%d",((ArrayNode) first).size(),index));
             }
-            return ((ArrayNode) first).get(index);
+            return ((ArrayNode) first).get(index.intValue());
         }else {
             throw new RuntimeException("unsupported type for INDEX," + first.getClass());
         }
@@ -76,8 +76,8 @@ public class BaseOperateExecutor extends OperateExecutor{
         if(first instanceof Double || second instanceof Double){
             return Double.valueOf(String.valueOf(first)) * Double.valueOf(String.valueOf(second));
         }
-        Integer a = (Integer)first;
-        Integer b = (Integer)second;
+        Long a = (Long)first;
+        Long b = (Long)second;
         return a*b;
     }
 
@@ -89,8 +89,8 @@ public class BaseOperateExecutor extends OperateExecutor{
         if(first instanceof Double || second instanceof Double){
             return Double.valueOf(String.valueOf(first)) / Double.valueOf(String.valueOf(second));
         }
-        Integer a = (Integer)first;
-        Integer b = (Integer)second;
+        Long a = (Long)first;
+        Long b = (Long)second;
         return a/b;
     }
 
@@ -130,8 +130,8 @@ public class BaseOperateExecutor extends OperateExecutor{
 
         if(second instanceof JsonNode){
             parent.set(name,(JsonNode) second);
-        }else if(second instanceof Integer){
-            parent.put(name, (Integer)second);
+        }else if(second instanceof Long){
+            parent.put(name, (Long)second);
         }else if(second instanceof Double){
             parent.put(name, (Double) second);
         }else if(second instanceof String ){
@@ -186,10 +186,10 @@ public class BaseOperateExecutor extends OperateExecutor{
     }
 
     @Override
-    protected Integer operateMod(Object first, Object second){
+    protected Long operateMod(Object first, Object second){
         print("MOD first:%s second:%s", first, second);
-        Integer a = (Integer)first;
-        Integer b = (Integer)second;
+        Long a = (Long)first;
+        Long b = (Long)second;
         return a % b;
     }
 
@@ -204,8 +204,8 @@ public class BaseOperateExecutor extends OperateExecutor{
         if(second instanceof JsonNode){
             second = convertJsonNode((JsonNode) second);
         }
-        if((first instanceof Integer || first instanceof Double)
-                && (second instanceof Integer || second instanceof Double)){
+        if((first instanceof Long || first instanceof Double)
+                && (second instanceof Long || second instanceof Double)){
             return Double.valueOf(first.toString()).compareTo(Double.valueOf(second.toString()));
         }
 
@@ -216,7 +216,7 @@ public class BaseOperateExecutor extends OperateExecutor{
         if(origin instanceof JsonNode){
             JsonNode tmp = (JsonNode)origin;
             if(tmp instanceof IntNode){
-                return tmp.asInt();
+                return tmp.asLong();
             }else if(tmp instanceof DoubleNode){
                 return tmp.asDouble();
             }else {

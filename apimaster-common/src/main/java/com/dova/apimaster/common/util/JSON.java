@@ -2,6 +2,7 @@ package com.dova.apimaster.common.util;
 
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Throwables;
@@ -55,8 +56,8 @@ public class JSON {
         return objectMapper.createObjectNode();
     }
 
-    public static ObjectNode of(String text)throws IOException {
-        return (ObjectNode)objectMapper.readTree(text);
+    public static JsonNode of(String text)throws IOException {
+        return objectMapper.readTree(text);
     }
 
     public static ObjectNode unCheckedOf(String text){

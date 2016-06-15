@@ -10,4 +10,8 @@ public class Keyword {
     public final static String BODY = "body";
     public final static String PATH = "path";
     public final static String HEADER = "header";
+    public final static String RANDOM = "random";
+    public final static String TIMESTAMP = "timestamp";
+
+
 }

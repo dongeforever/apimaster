@@ -38,8 +38,7 @@ public class HttpAssertInjectExecutor {
     }
 
     public ApiRes execute(RestApi restApi){
-        JsonNode response = httpExecutor.executeHttp(restApi);
-        return  new ApiRes().api(restApi).response(response);
+       return execute(restApi, null ,false);
     }
 
     public ApiRes execute(RestApi restApi,UnitCase unitCase){
@@ -47,14 +46,46 @@ public class HttpAssertInjectExecutor {
     }
 
     public ApiRes execute(RestApi restApi, UnitCase unitCase, boolean inject){
-        if(inject){
-            doInject(unitCase);
+        ApiRes apiRes = new ApiRes(unitCase == null ? 0 : unitCase.getId()).api(restApi);
+        JsonNode response = null;
+        AssertResult assertResult = null;
+        try{
+            if(unitCase != null && inject){
+                try{
+                    doInject(unitCase);
+                }catch (Exception e){
+                    throw new RuntimeException("Inject Error:"+e.getMessage());
+                }
+            }
+            try{
+                if(unitCase != null) restApi.fillParas(unitCase);
+                response = httpExecutor.executeHttp(restApi);
+            }catch (Exception e){
+                throw new RuntimeException("ExecuteHttp Error:" + e.getMessage());
+            }
+            if(unitCase != null){
+                try{
+                    assertResult = assertExecutor.executeAssert(unitCase,response);
+                }catch (Exception e){
+                    throw new RuntimeException("Assert Error" + e.getMessage());
+                }
+            }
+        }catch (Exception e){
+            if(response == null){
+                response = JSON.newObjectNode();
+            }
+            if(unitCase != null && assertResult == null){
+                assertResult = new AssertResult();
+                assertResult.asserts = unitCase.getAssertions().size();
+                assertResult.errors = 1;
+                assertResult.remark = e.getMessage();
+            }
+        }finally {
+            apiRes.response(response).assertRes(assertResult);
         }
-        restApi.fillParas(unitCase);
-        JsonNode response = httpExecutor.executeHttp(restApi);
-        AssertResult assertResult = assertExecutor.executeAssert(unitCase,response);
-        ApiRes apiRes= new ApiRes(unitCase.getId()).api(restApi).response(response).assertRes(assertResult);
-        apiResCache.put(unitCase.getId(), apiRes);
+        if(unitCase != null){
+            apiResCache.put(unitCase.getId(), apiRes);
+        }
         return apiRes;
     }
 
@@ -64,14 +95,15 @@ public class HttpAssertInjectExecutor {
         }
         ObjectNode request = UnitCaseHelper.createRequestNode(unitCase);
         astParseExecutor.bindObject(new JsonBindingObject(Keyword.REQUEST, request));
+
         for(UnitInject unitInject : unitCase.getInjects()){
-            if(unitInject.getFromUnitId() <= 0
-                    || Strings.isNullOrEmpty(unitInject.getInjectExp().getValue())
-                    || apiResCache.getIfPresent(unitInject.getFromUnitId()) == null){
+            if(Strings.isNullOrEmpty(unitInject.getInjectExp().getValue())){
                 continue;
             }
             ApiRes apiRes = apiResCache.getIfPresent(unitInject.getFromUnitId());
-            astParseExecutor.bindObject(new JsonBindingObject(Keyword.RESPONSE, apiRes.response));
+            if(apiRes != null){
+                astParseExecutor.bindObject(new JsonBindingObject(Keyword.RESPONSE, apiRes.response));
+            }
             astParseExecutor.parseAndExecute(unitInject.getInjectExp().getValue());
         }
 

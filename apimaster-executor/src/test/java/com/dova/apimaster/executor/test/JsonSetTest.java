@@ -14,7 +14,7 @@ public class JsonSetTest {
     @Test
     public void testSetJson()throws Exception{
         String json = "{\"id\":1}";
-        ObjectNode root = JSON.of(json);
+        ObjectNode root = (ObjectNode) JSON.of(json);
         root.put("id",12);
         JsonNode idNode = root.path("id");
         System.out.println(JSON.toJson(root));
@@ -24,7 +24,7 @@ public class JsonSetTest {
     @Test
     public void testJsonOrder()throws Exception{
         String json = "{\"id\":1}";
-        ObjectNode root = JSON.of(json);
+        ObjectNode root = (ObjectNode) JSON.of(json);
         root.put("23",12);
         root.put("11",11);
         root.put("12",11);

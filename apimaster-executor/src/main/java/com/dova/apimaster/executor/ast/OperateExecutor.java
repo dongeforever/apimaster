@@ -71,7 +71,7 @@ public abstract class OperateExecutor {
 
     protected abstract Boolean operateAnd(Object first, Object second);
 
-    protected abstract Integer operateMod(Object first, Object second);
+    protected abstract Long operateMod(Object first, Object second);
 
     protected abstract Object operateDiv(Object first,Object second);
 

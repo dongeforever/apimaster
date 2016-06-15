@@ -15,7 +15,10 @@ public class Binding {
     private Map<String, BindingObject> objectMap = new HashMap<>();
     private Map<String, Function> functionMap = new HashMap<>();
 
-
+    public Binding(){
+        bindObject(RandomBindingObject.getInstance());
+        bindObject(TimestampBindingObject.getInstance());
+    }
     public void bindObject(BindingObject object){
         objectMap.put(object.getName(),object);
     }

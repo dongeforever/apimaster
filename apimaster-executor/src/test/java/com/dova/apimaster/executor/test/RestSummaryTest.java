@@ -6,6 +6,7 @@ import com.dova.apimaster.common.domain.RestCaseSummary;
 import com.dova.apimaster.common.domain.UnitCase;
 import com.dova.apimaster.common.util.JSON;
 import com.dova.apimaster.executor.RestCaseTool;
+import com.dova.apimaster.executor.ast.helper.PrintUtil;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
@@ -30,6 +31,12 @@ public class RestSummaryTest {
 
     @Test
     public void testRun()throws Exception{
-        RestCaseTool.runFromStream(this.getClass().getClassLoader().getResourceAsStream("example.conf"));
+        RestCaseTool.runFromStream(this.getClass().getClassLoader().getResourceAsStream("example.conf"),false);
+    }
+
+    @Test
+    public void testRunExpress()throws Exception{
+        RestCaseTool.runFromStream(this.getClass().getClassLoader().getResourceAsStream("express.conf"),true);
+
     }
 }

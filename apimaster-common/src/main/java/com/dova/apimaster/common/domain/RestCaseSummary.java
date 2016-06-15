@@ -17,6 +17,8 @@ public class RestCaseSummary {
     public RestApi.BodyType requestBodyType; //form,text,json
     public JsonNode requestBody;
 
+    public RestApi.BodyType responseBodyType;
+
     //校验
     public List<Expression> assertions;
     //注入
@@ -32,6 +34,7 @@ public class RestCaseSummary {
         restApi.setHeaders(headers);
         restApi.setRequestBodyType(requestBodyType);
         restApi.setRequestBody(requestBody);
+        restApi.setResponseBodyType(responseBodyType);
         return  restApi;
     }
 

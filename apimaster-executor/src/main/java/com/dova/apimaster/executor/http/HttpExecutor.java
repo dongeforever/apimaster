@@ -13,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -58,7 +59,7 @@ public class HttpExecutor {
             HttpResponse response = client.execute(request);
             status = response.getStatusLine().getStatusCode();
             entity = response.getEntity();
-            text = EntityUtils.toString(entity);
+            if(entity != null) text = EntityUtils.toString(entity);
         }catch (Exception e){
             exception = e.getMessage();
         }finally {
@@ -124,9 +125,10 @@ public class HttpExecutor {
             }
             entity = new UrlEncodedFormEntity(data, "UTF-8");
         }else {
-            entity = new StringEntity(JSON.uncheckedToJson(restApi.getRequestBody()),"utf-8");
             if(restApi.getRequestBodyType() == RestApi.BodyType.JSON){
-                buider.addHeader("Content-Type","application/json");
+                entity = new StringEntity(JSON.uncheckedToJson(restApi.getRequestBody()), ContentType.APPLICATION_JSON);
+            }else {
+                entity = new StringEntity(JSON.uncheckedToJson(restApi.getRequestBody()),"utf-8");
             }
         }
         return  buider.setEntity(entity);

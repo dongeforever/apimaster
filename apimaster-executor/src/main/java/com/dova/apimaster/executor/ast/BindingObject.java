@@ -8,16 +8,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * Created by liuzhendong on 16/5/31.
  */
-public abstract class BindingObject<T> {
+public abstract class BindingObject {
     private final String name;
     @JsonIgnore
-    private final T object;
+    private final Object object;
 
-    public BindingObject(String name, T object){
+    public BindingObject(String name, Object object){
         this.object = object;
         this.name = name;
     }
-    public T getObject() {
+    public Object getObject() {
         return object;
     }
 

@@ -17,17 +17,35 @@ public class RestCaseTool {
 
     private static HttpAssertInjectExecutor executor = new HttpAssertInjectExecutor();
 
-    public static void runFromStream(InputStream inputStream)throws Exception{
+    public static void runFromStream(InputStream inputStream,boolean debug)throws Exception{
         List<ApiRes>  errorApiResList = Lists.newArrayList();
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
         int caseNum = 0,succNum = 0,failNum = 0;
         String line = null;
         while ((line = br.readLine()) != null){
+            if(line.trim().charAt(0) == '#'){
+                continue;
+            }
             RestCaseSummary summary = JSON.safeRead(line, RestCaseSummary.class);
             long start = System.currentTimeMillis();
             System.out.println(String.format("PROCESSING_START restcase-%d =====>>",summary.caseId));
             System.out.println(String.format("\t%s %s",summary.method, summary.url));
             ApiRes apiRes = executor.execute(summary.asRestApi(), summary.asUnitCase(),true);
+            if(debug){
+                System.out.println("DEBUG==============================>>");
+                if((apiRes.restApi.getPathVariables() != null && apiRes.restApi.getPathVariables().size() > 0)){
+                    System.out.println(String.format("\tpathVariables:%s", JSON.uncheckedToJson(apiRes.restApi.getPathVariables())));
+                }
+                if(apiRes.restApi.getHeaders() != null && apiRes.restApi.getHeaders().size() > 0){
+                    System.out.println(String.format("\theaders:%s", JSON.uncheckedToJson(apiRes.restApi.getHeaders())));
+                }
+                if(apiRes.restApi.getRequestBody() != null && apiRes.restApi.getRequestBody().size() > 0){
+                    System.out.println(String.format("\treq_body:%s", JSON.uncheckedToJson(apiRes.restApi.getRequestBody())));
+                }
+                System.out.println(String.format("\tresponse:\n\t%s", JSON.uncheckedToJson(apiRes.response)));
+                System.out.println(String.format("\tassert-remark:\n\t%s", JSON.uncheckedToJson(apiRes.assertRes.remark)));
+                System.out.println("DEBUG<<==============================");
+            }
             System.out.println(String.format("\tasserts:%d fails:%d errors:%d",apiRes.assertRes.asserts, apiRes.assertRes.fails, apiRes.assertRes.errors));
             long end = System.currentTimeMillis();
             System.out.println(String.format("PROCESSING_END restcase-%d cost %d ms <<=====",summary.caseId, end-start));
@@ -73,11 +91,12 @@ public class RestCaseTool {
             System.exit(1);
         }
         System.out.println("args[0]:" + args[0]);
+        boolean debug = false;
         if(args.length >= 2 && args[1].equals("debug")){
-            PrintUtil.debug = true;
             System.out.println("enable debug");
+            debug = true;
         }
-        runFromStream(new FileInputStream(args[0]));
+        runFromStream(new FileInputStream(args[0]), debug);
     }
 
 }

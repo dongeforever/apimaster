@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Created by liuzhendong on 16/6/2.
  */
-public class JsonBindingObject extends BindingObject<JsonNode>{
+public class JsonBindingObject extends BindingObject{
 
     public JsonBindingObject(String name, JsonNode node){
         super(name,node);

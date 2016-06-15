@@ -128,7 +128,6 @@ public class AstParser {
                 lastStatus = checkParseResult(squareBracket,opStack,valueStack,binding,lastStatus,expression,i);
                 i++;
                 ParseResult recursiveRes = parseUntil(expression, binding, i, ']');
-                System.out.println(i + " " + recursiveRes.offset);
                 i = i + recursiveRes.offset;
                 Assert.assertion(i < expression.length() && expression.charAt(i) == ']',AstError.UnExpected,"the left square bracket num must eq the right square bracket while finished,index:%d char:%c",i - recursiveRes.offset - 1,expression.charAt(i - recursiveRes.offset - 1));
                 lastStatus = checkParseResult(recursiveRes, opStack, valueStack, binding, lastStatus,expression,i-recursiveRes.offset);
@@ -379,7 +378,7 @@ public class AstParser {
             if(sb.toString().contains(".")){
                 value = Double.valueOf(sb.toString());
             }else {
-                value = Integer.valueOf(sb.toString());
+                value = Long.valueOf(sb.toString());
             }
             dataType = AstNode.DataType.NUMRIC;
         }else {
