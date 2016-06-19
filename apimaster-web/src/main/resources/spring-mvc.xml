@@ -50,7 +50,7 @@
         <property name="templateEngine" ref="templateEngine" />
     </bean>
 
-    <mvc:resources mapping="/html/**" location="/WEB-INF/static/">
+    <mvc:resources mapping="/static/**" location="/WEB-INF/static/">
         <mvc:cache-control max-age="3600" cache-public="true"/>
     </mvc:resources>
 </beans>

@@ -1,10 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
     <title>Title</title>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <!-- from github https://github.com/abodelot/jquery.json-viewer -->
+    <script src="../static/js/jquery.json-viewer.js"></script>
+    <link rel="stylesheet" href="../static/css/jquery.json-viewer.css"/>
+    <!-- 自己的js与css-->
+    <script src="../static/js/api.js" ></script>
+    <link rel="stylesheet" href="../static/css/api.css" />
+
 </head>
-<body>
-<h2>this is api</h2>
+<body class="container" style="margin-left: 10px;margin-right:10px;background-color: rgba(238, 238, 238, 0.41)">
+<div class="container rest-name-url">
+    <h3 class="input text">菜品添加<i style="font-size: 3px">123</i></h3>
+    <div class="row">
+        <div class="col-md-1 input text">POST</div>
+        <div class="col-md-9 input text">http://localhost:8081/sellers/dishes/{dishId}/kitchen/2123/</div>
+    </div>
+</div>
+<div class="container pathvariables">
+    <h4>path variables</h4>
+    <div class="row">
+        <div class="col-md-1 input text">dishId</div>
+        <div class="col-md-1 input text">4835</div>
+    </div>
+</div>
+
+<div class="container headers">
+    <h4>headers</h4>
+    <div class="row">
+        <div class="col-md-2 input text">Content-Type</div>
+        <div class="col-md-4 input text">text/html;charset=utf-8</div>
+    </div>
+</div>
+<div class="container requestbody">
+    <h4>requestbody <i style="font-size: 10px">TEXT</i></h4>
+    <div class="row">
+        <pre class="col-md-10">text</pre>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <button type="button" class="btn btn-default">本地执行</button>
+        <button type="button" class="btn btn-default ">远程执行</button>
+    </div>
+</div>
+<div class="container response">
+    <div class="row">
+        <div class="col-md-1">type</div>
+        <div class="col-md-1">json</div>
+        <div class="col-md-1">status</div>
+        <div class="col-md-1">200</div>
+    </div>
+    <div class="row">
+        <pre id="json-renderer" class="col-md-10"></pre>
+    </div>
+
+</div>
 </body>
 </html>

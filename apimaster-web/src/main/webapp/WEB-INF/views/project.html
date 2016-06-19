@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="lang="zh-CN"">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
 
     <title>项目名称</title>
 
-    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
 
     <!-- 可选的Bootstrap主题文件（一般不用引入） -->
-    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"/>
 
 
-    <link rel="stylesheet" href="../static/css/dashboard.css" >
+    <link rel="stylesheet" href="../static/css/dashboard.css" />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -29,6 +29,8 @@
 
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script src="../static/js/common.js"></script>
 </head>
 <body huaban_collector_injected="true" data-pinterest-extension-installed="cr1.39.1">
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -53,30 +55,28 @@
 </nav>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
+        <div class="col-md-2 sidebar">
             <ul class="nav nav-sidebar">
                 <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-                <li><a href="api.html" target="api_content">添加菜品</a></li>
-                <li><a href="case.html" target="api_content">修改菜品</a></li>
-                <li><a href="#">B端根据菜品ID获取菜品</a></li>
-                <li><a href="">B端根据菜品ID集合批量获取菜品</a></li>
-                <li><a href="">B端根据厨房ID获取菜品列表</a></li>
-                <li><a href="">B端根据厨房获取菜品</a></li>
-                <li><a href="">B端批量修改菜品价格</a></li>
-                <li><a href="">B端菜品上架</a></li>
-                <li><a href="">B端菜品下架</a></li>
-                <li><a href="">B端锁定菜品图片</a></li>
-                <li><a href="">B端解锁菜品图片</a></li>
-                <li><a href="">B端修改库存</a></li>
-                <li><a href="">B端批量修改库存</a></li>
-                <li><a href="">C端根据菜品ID获取菜品</a></li>
-                <li><a href="">C端根据菜品ID集合获取菜品</a></li>
-                <li><a href="">C端根据厨房ID获取菜品列表</a></li>
+                <li class="normal"><a href="api.html" target="api_content">添加菜品</a></li>
+                <li class="normal"><a href="api.html" target="api_content">修改菜品</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端根据菜品ID获取菜品</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端根据菜品ID集合批量获取菜品</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端根据厨房ID获取菜品列表</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端根据厨房获取菜品</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端批量修改菜品价格</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端菜品上架</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端菜品下架</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端锁定菜品图片</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端解锁菜品图片</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端修改库存</a></li>
+                <li class="normal"><a href="api.html" target="api_content">B端批量修改库存</a></li>
+                <li class="normal"><a href="api.html" target="api_content">C端根据菜品ID获取菜品</a></li>
+                <li class="normal"><a href="api.html" target="api_content">C端根据菜品ID集合获取菜品</a></li>
+                <li class="normal"><a href="api.html" target="api_content">C端根据厨房ID获取菜品列表</a></li>
             </ul>
         </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <iframe src="api.html" name="api_content" frameborder="0"></iframe>
-        </div>
+        <iframe id="api-main" class="col-md-11 col-md-offset-2 main" src="case.html" name="api_content" frameborder="0" scrolling="no" onload="iFrameHeight('api-main')"></iframe>
     </div>
 </div>
 </body>

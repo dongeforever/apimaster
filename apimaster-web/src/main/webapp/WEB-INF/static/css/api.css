@@ -1,0 +1,6 @@
+.row [class^=col-]{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #F0F8FA;
+    border: 1px solid rgba(86,61,124,.2);
+}
