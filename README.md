@@ -54,4 +54,4 @@
 ```
 
 ## 使用方式二：部署成web应用，以下是自己设计的原型，待完善
-![自己设计的原型](http://www.futureinst.com/images/others/project-api-master.jpg)
+![原型](http://www.futureinst.com/images/others/project-api-master.jpg)
