@@ -11,7 +11,7 @@
 {
     "caseId": 3,
     "method": "POST",
-    "url": "http://123.57.0.49:8004/waybill/{waybillId}",
+    "url": "http://XXX.XXX.XXX.XXX:8004/waybill/{waybillId}",
     "pathVariables": {
         "waybillId": 1
     },
