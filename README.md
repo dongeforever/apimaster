@@ -6,7 +6,7 @@
 * inject the result into next api's parameter, so the testing can be continueous
 * support both unit test and integrating test
 
-##使用方式一：编写配置文件直接使用
+## used standalone: write conf file in json format, and execute it
 ```json
 {
     "caseId": 3,
@@ -53,5 +53,5 @@
 }
 ```
 
-## 使用方式二：部署成web应用，以下是自己设计的原型，待完善
-![原型](https://github.com/dongeforever/apimaster/blob/master/others/project-api-master.jpg)
+## deployed as web application:below is my self-designed prototype,and the implementation is coming soon
+![prototype](https://github.com/dongeforever/apimaster/blob/master/others/project-api-master.jpg)
